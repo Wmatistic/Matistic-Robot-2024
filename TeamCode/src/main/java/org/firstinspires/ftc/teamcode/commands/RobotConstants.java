@@ -13,4 +13,13 @@ public class RobotConstants {
         public static String rightFront = "FR";
     }
 
+    @Config
+    public static class Lift {
+        public static LiftPID leftPID = new LiftPID(3, 0.17, 1, 0, 515);
+        public static LiftPID rightPID = new LiftPID(3, 0.17, 1, 0, 515);
+
+        // POSITIONS
+        public static int Submerisble = 0;
+    }
+
 }

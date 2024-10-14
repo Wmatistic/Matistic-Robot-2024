@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.commands.State;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
 
@@ -36,10 +37,20 @@ public class DinnerWithJayZ extends OpMode {
         driver.readButtons();
         operator.readButtons();
 
+
+        // --------------------------- DRIVER CODE --------------------------- //
         bot.drivetrain.drive(driver);
 
         if(driver.wasJustPressed(GamepadKeys.Button.Y)){
             bot.drivetrain.resetHeading();
+        }
+
+        if(driver.wasJustPressed(GamepadKeys.Button.X)){
+            bot.drivetrain.changeMode();
+        }
+
+        if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)){
+            bot.setPosition(State.SUBINTAKING);
         }
 
     }

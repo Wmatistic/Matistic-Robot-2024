@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.arcrobotics.ftclib.command.Subsystem;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -10,7 +11,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.commands.RobotConstants;
 
-public class Mecanum {
+public class Mecanum implements Subsystem {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     double y, x, rx, leftFrontPower, leftRearPower, rightFrontPower, rightRearPower, heading, rotX, rotY;
     private IMU imu;
