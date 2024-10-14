@@ -40,4 +40,17 @@ public class RobotConstants {
         public static double submersibleGrab = 0;
     }
 
+    @Config
+    public static class HorizontalExtension {
+        public static String rail = "rail";
+        public static String leftSlide = "leftSlide";
+        public static String rightSlide = "rightSlide";
+
+        public static double railMax = 0.0;
+        public static double slideMax = 0.0;
+
+        // Input works on a scale of 2 with 1.0 being full extension of the rail and 2.0 being full extension of both slide and rail
+        public static double subIntaking = 0.0;
+    }
+
 }

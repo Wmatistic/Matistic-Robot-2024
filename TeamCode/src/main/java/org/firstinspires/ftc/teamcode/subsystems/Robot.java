@@ -9,6 +9,7 @@ public class Robot {
     public Mecanum drivetrain;
     public Lift lift;
     public Arm arm;
+    public HorizontalExtension horizontalExtension;
 
     private State state;
 
@@ -16,12 +17,15 @@ public class Robot {
         drivetrain = new Mecanum(hardwareMap);
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
+        horizontalExtension = new HorizontalExtension(hardwareMap);
 
         state = State.IDLE;
     }
 
     public void setPosition(State state){
         lift.setPosition(state);
+        arm.setPosition(state);
+        horizontalExtension.setPosition(state);
 
         this.state = state;
     }

@@ -82,7 +82,13 @@ public class DinnerWithJayZ extends OpMode {
                     bot.setPosition(State.IDLE);
                 }
 
-
+                // Slowly Extend or Retract Extension
+                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)){
+                    bot.horizontalExtension.incrementExtension(0.01);
+                }
+                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)){
+                    bot.horizontalExtension.incrementExtension(-0.01);
+                }
 
                 // Slowly Raise or Lower Slides
                 if(driver.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
