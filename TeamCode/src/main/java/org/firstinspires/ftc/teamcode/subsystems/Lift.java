@@ -18,8 +18,8 @@ public class Lift implements Subsystem {
     int target;
 
     public Lift(HardwareMap hardwareMap) {
-        leftSlide = hardwareMap.get(DcMotorEx.class, "leftSlide");
-        rightSlide = hardwareMap.get(DcMotorEx.class, "rightSlide");
+        leftSlide = hardwareMap.get(DcMotorEx.class, RobotConstants.Lift.leftSlide);
+        rightSlide = hardwareMap.get(DcMotorEx.class, RobotConstants.Lift.rightSlide);
 
         leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -37,8 +37,20 @@ public class Lift implements Subsystem {
 
     public void setPosition(State state){
         switch(state){
-            case SUBINTAKING:
-                setTarget(RobotConstants.Lift.Submerisble);
+            case HIGH_BUCKET:
+                setTarget(RobotConstants.Lift.highBucket);
+                break;
+            case LOW_BUCKET:
+                setTarget(RobotConstants.Lift.lowBucket);
+                break;
+            case HIGH_BAR:
+                setTarget(RobotConstants.Lift.highBar);
+                break;
+            case LOW_BAR:
+                setTarget(RobotConstants.Lift.lowBar);
+                break;
+            case SUB_INTAKING:
+                setTarget(RobotConstants.Lift.submersible);
                 break;
         }
     }
@@ -50,5 +62,9 @@ public class Lift implements Subsystem {
         rightPID.clearError();
         leftPID.setTarget(target);
         rightPID.setTarget(target);
+    }
+
+    public void incrementSlides(double input) {
+        setTarget((int)(rightSlide.getCurrentPosition()+input));
     }
 }

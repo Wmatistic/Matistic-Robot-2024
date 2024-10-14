@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Pose2d;
 
 public class RobotConstants {
 
@@ -15,11 +14,30 @@ public class RobotConstants {
 
     @Config
     public static class Lift {
+        public static String leftSlide = "leftSlide";
+        public static String rightSlide = "rightSlide";
+
         public static LiftPID leftPID = new LiftPID(3, 0.17, 1, 0, 515);
         public static LiftPID rightPID = new LiftPID(3, 0.17, 1, 0, 515);
 
         // POSITIONS
-        public static int Submerisble = 0;
+        public static int highBucket = 0;
+        public static int lowBucket = 0;
+        public static int highBar = 0;
+        public static int lowBar = 0;
+        public static int submersible = 0;
+    }
+
+    @Config
+    public static class Arm {
+        public static String leftArm = "leftArm";
+        public static String rightArm = "rightArm";
+
+        public static double idle = 0;
+        public static double transfer = 0;
+        public static double transferGrab = 0;
+        public static double submersible = 0;
+        public static double submersibleGrab = 0;
     }
 
 }
