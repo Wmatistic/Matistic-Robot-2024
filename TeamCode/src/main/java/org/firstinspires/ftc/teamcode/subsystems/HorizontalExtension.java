@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.commands.State;
 
 public class HorizontalExtension implements Subsystem {
 
-    private Servo rail, leftSlide, rightSlide;
+    private final Servo rail, leftSlide, rightSlide;
 
     private double target = 0.0;
 
@@ -21,8 +21,17 @@ public class HorizontalExtension implements Subsystem {
 
     public void setPosition(State state){
         switch (state){
+            case IDLE:
+                setExtension(RobotConstants.HorizontalExtension.idle);
+                break;
             case SUB_INTAKING:
                 setExtension(RobotConstants.HorizontalExtension.subIntaking);
+                break;
+            case HIGH_BUCKET:
+            case LOW_BUCKET:
+            case HIGH_BAR:
+            case LOW_BAR:
+                setExtension(RobotConstants.HorizontalExtension.scoring);
                 break;
         }
     }

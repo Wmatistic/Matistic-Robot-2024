@@ -21,6 +21,7 @@ public class RobotConstants {
         public static LiftPID rightPID = new LiftPID(3, 0.17, 1, 0, 515);
 
         // POSITIONS
+        public static int idle = 0;
         public static int highBucket = 0;
         public static int lowBucket = 0;
         public static int highBar = 0;
@@ -50,7 +51,9 @@ public class RobotConstants {
         public static double slideMax = 0.0;
 
         // Input works on a scale of 2 with 1.0 being full extension of the rail and 2.0 being full extension of both slide and rail
+        public static double idle = 0.0;
         public static double subIntaking = 0.0;
+        public static double scoring = 0.0;
     }
 
 }

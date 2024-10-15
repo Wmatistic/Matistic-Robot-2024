@@ -12,9 +12,9 @@ import org.firstinspires.ftc.teamcode.commands.RobotConstants;
 
 public class Lift implements Subsystem {
 
-    private DcMotorEx leftSlide, rightSlide;
+    private final DcMotorEx leftSlide, rightSlide;
 
-    private LiftPID leftPID, rightPID;
+    private final LiftPID leftPID, rightPID;
     int target;
 
     public Lift(HardwareMap hardwareMap) {
@@ -37,6 +37,9 @@ public class Lift implements Subsystem {
 
     public void setPosition(State state){
         switch(state){
+            case IDLE:
+                setTarget(RobotConstants.Lift.idle);
+                break;
             case HIGH_BUCKET:
                 setTarget(RobotConstants.Lift.highBucket);
                 break;
