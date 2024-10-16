@@ -70,4 +70,21 @@ public class Lift implements Subsystem {
     public void incrementSlides(double input) {
         setTarget((int)(rightSlide.getCurrentPosition()+input));
     }
+
+    public void altZeroPowerBehavior(){
+        if (leftSlide.getZeroPowerBehavior() == DcMotor.ZeroPowerBehavior.BRAKE){
+            setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        } else {
+            setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+    }
+
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
+        leftSlide.setZeroPowerBehavior(behavior);
+        rightSlide.setZeroPowerBehavior(behavior);
+    }
+
+    public int getPosition(){
+        return rightSlide.getCurrentPosition();
+    }
 }

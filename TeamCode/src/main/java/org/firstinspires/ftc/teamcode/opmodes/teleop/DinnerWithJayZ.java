@@ -30,6 +30,9 @@ public class DinnerWithJayZ extends OpMode {
     @Override
     public void loop() {
 
+        telemetry.addLine("Running");
+        telemetry.update();
+
         driver.readButtons();
         operator.readButtons();
 
