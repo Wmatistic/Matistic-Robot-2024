@@ -69,7 +69,7 @@ public class LiftPID {
         totalError = 0;
     }
 
-    public double getCorrectionPosition(double position, double voltage){
+    public double getCorrectionPosition(double position, double voltage, State state){
         setP(ogP);
 
         double distance = Math.abs(position-target);
@@ -83,7 +83,7 @@ public class LiftPID {
             return 0;
         }
 
-        if(target == 0){
+        if(state.equals(State.IDLE) || target == 0){
             if(position <= 0) {
                 setI(0);
                 totalError = 0;

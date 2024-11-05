@@ -4,10 +4,12 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.commands.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.State;
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
+import org.firstinspires.ftc.teamcode.commands.VoltageReader;
 
 @TeleOp
 public class DinnerWithJayZ extends OpMode {
@@ -15,6 +17,8 @@ public class DinnerWithJayZ extends OpMode {
     private Robot bot;
 
     private GamepadEx driver, operator;
+    private VoltageReader voltageReader;
+    double slideOverride;
 
     @Override
     public void init() {
@@ -22,6 +26,7 @@ public class DinnerWithJayZ extends OpMode {
         telemetry.update();
 
         bot = new Robot(hardwareMap);
+        voltageReader = new VoltageReader(hardwareMap);
 
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
@@ -31,6 +36,10 @@ public class DinnerWithJayZ extends OpMode {
     public void loop() {
 
         telemetry.addLine("Running");
+        telemetry.addData("Current State: ", bot.getState());
+
+        telemetry.addData("\n Lift Position: ", bot.lift.getPosition());
+        telemetry.addData("\n Extension Position", bot.horizontalExtension.getExtensionPosition());
         telemetry.update();
 
         driver.readButtons();
@@ -42,6 +51,8 @@ public class DinnerWithJayZ extends OpMode {
         bot.drivetrain.drive(driver);
 
             // --------------------------- GLOBAL CONTROLS --------------------------- //
+
+        bot.lift.powerSlides(voltageReader.getVoltage(), bot.getState(), slideOverride);
 
         if(driver.wasJustPressed(GamepadKeys.Button.Y)){
             bot.drivetrain.resetHeading();
@@ -79,10 +90,19 @@ public class DinnerWithJayZ extends OpMode {
 
                 break;
             case SUB_INTAKING:
+            case SUB_GRABBING:
 
                 // Return To Default
-                if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
+                if(driver.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
                     bot.setPosition(State.IDLE);
+                }
+
+                if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
+                    if(bot.getState() == State.SUB_INTAKING) {
+                        bot.setPosition(State.SUB_GRABBING);
+                    } else if (bot.getState() == State.SUB_GRABBING){
+                        bot.setPosition(State.SUB_INTAKING);
+                    }
                 }
 
                 // Slowly Extend or Retract Extension
@@ -118,6 +138,16 @@ public class DinnerWithJayZ extends OpMode {
                 }
 
                 break;
+
+            case LOW_BUCKET:
+
+                // Return To Default
+                if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
+                    bot.setPosition(State.IDLE);
+                }
+
+                break;
+
             case GROUND_INTAKING:
 
                 // Return To Default

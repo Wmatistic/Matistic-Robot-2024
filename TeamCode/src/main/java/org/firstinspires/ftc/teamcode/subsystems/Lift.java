@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -33,6 +34,8 @@ public class Lift implements Subsystem {
         rightSlide.setPower(0);
 
         rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        setTarget(0);
     }
 
     public void setPosition(State state){
@@ -67,6 +70,28 @@ public class Lift implements Subsystem {
         rightPID.setTarget(target);
     }
 
+    public void powerSlides(double voltage, State state, double override){
+        int rightCurrent = rightSlide.getCurrentPosition();
+        double power = rightPID.getCorrectionPosition(rightCurrent, voltage, state);
+
+        switch(state){
+            case IDLE:
+                if(Math.min(rightCurrent, leftSlide.getCurrentPosition()) < 5){
+                    power = 0;
+                    rightPID.setI(0);
+                    rightPID.clearError();
+                }
+                break;
+        }
+
+        if(override != 0){
+            setTarget(rightCurrent);
+            power = -override;
+        }
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
+    }
+
     public void incrementSlides(double input) {
         setTarget((int)(rightSlide.getCurrentPosition()+input));
     }
@@ -77,6 +102,10 @@ public class Lift implements Subsystem {
         } else {
             setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
+    }
+
+    public DcMotor.ZeroPowerBehavior getZeroPowerBehavior(){
+        return leftSlide.getZeroPowerBehavior();
     }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
