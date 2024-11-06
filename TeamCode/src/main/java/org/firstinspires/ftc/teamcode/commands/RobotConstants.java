@@ -17,8 +17,13 @@ public class RobotConstants {
         public static String leftSlide = "leftSlide";
         public static String rightSlide = "rightSlide";
 
-        public static LiftPID leftPID = new LiftPID(4, 0.2,4, 0, 515);
-        public static LiftPID rightPID = new LiftPID(4, 0.2, 4, 0, 515);
+        public static LiftPID leftPID = new LiftPID(2, 0.1,4, 0, 515);
+        public static LiftPID rightPID = new LiftPID(2, 0.1, 4, 0, 515);
+
+        public static double P = 0.0011;
+        public static double I = 0.2;
+        public static double D = 0.0001;
+        public static double F = 0.00001;
 
         // POSITIONS
         public static int idle = 10;

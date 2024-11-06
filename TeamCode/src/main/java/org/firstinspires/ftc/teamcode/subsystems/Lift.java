@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -10,30 +11,41 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.commands.State;
 import org.firstinspires.ftc.teamcode.commands.LiftPID;
 import org.firstinspires.ftc.teamcode.commands.RobotConstants;
+import org.firstinspires.ftc.teamcode.commands.VoltageReader;
 
 public class Lift implements Subsystem {
 
     private final DcMotorEx leftSlide, rightSlide;
 
-    private final LiftPID leftPID, rightPID;
+    private final VoltageReader voltageReader;
+
+    private final PIDFController liftPID;
+
+//    private final LiftPID leftPID, rightPID;
     int target;
 
     public Lift(HardwareMap hardwareMap) {
+        voltageReader = new VoltageReader(hardwareMap);
+
         leftSlide = hardwareMap.get(DcMotorEx.class, RobotConstants.Lift.leftSlide);
         rightSlide = hardwareMap.get(DcMotorEx.class, RobotConstants.Lift.rightSlide);
 
-        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftPID = RobotConstants.Lift.leftPID;
-        rightPID = RobotConstants.Lift.rightPID;
+        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        liftPID = new PIDFController(RobotConstants.Lift.P, RobotConstants.Lift.I, RobotConstants.Lift.D, RobotConstants.Lift.F);
+
+//        leftPID = RobotConstants.Lift.leftPID;
+//        rightPID = RobotConstants.Lift.rightPID;
 
         leftSlide.setPower(0);
         rightSlide.setPower(0);
-
-        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setTarget(0);
     }
@@ -71,25 +83,26 @@ public class Lift implements Subsystem {
     }
 
     public void powerSlides(double voltage, State state, double override){
-        int rightCurrent = rightSlide.getCurrentPosition();
-        double power = rightPID.getCorrectionPosition(rightCurrent, voltage, state);
-
-        switch(state){
-            case IDLE:
-                if(Math.min(rightCurrent, leftSlide.getCurrentPosition()) < 5){
-                    power = 0;
-                    rightPID.setI(0);
-                    rightPID.clearError();
-                }
-                break;
-        }
-
-        if(override != 0){
-            setTarget(rightCurrent);
-            power = -override;
-        }
-        rightSlide.setPower(power);
-        leftSlide.setPower(power);
+        
+//        int rightCurrent = rightSlide.getCurrentPosition();
+//        double power = rightPID.getCorrectionPosition(rightCurrent, voltage, state);
+//
+//        switch(state){
+//            case IDLE:
+//                if(Math.min(rightCurrent, leftSlide.getCurrentPosition()) < 5){
+//                    power = 0;
+//                    rightPID.setI(0);
+//                    rightPID.clearError();
+//                }
+//                break;
+//        }
+//
+//        if(override != 0){
+//            setTarget(rightCurrent);
+//            power = -override;
+//        }
+//        rightSlide.setPower(power);
+//        leftSlide.setPower(power);
     }
 
     public void incrementSlides(double input) {

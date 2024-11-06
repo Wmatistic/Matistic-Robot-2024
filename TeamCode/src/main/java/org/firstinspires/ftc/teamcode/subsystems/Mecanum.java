@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -33,19 +34,24 @@ public class Mecanum implements Subsystem {
         ));
         imu.initialize(parameters);
 
+        imu.resetYaw();
+
         mode = mode.FIELD;
+
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void drive(GamepadEx gamepad) {
-        y = gamepad.getLeftX();
-        y = gamepad.getLeftY() * 1.1;
+        double y = -gamepad.getLeftY();
+        double x = -gamepad.getLeftX() * 1.1;
         rx = gamepad.getRightX();
 
         switch (mode) {
             case FIELD:
                 heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-                rotX = x * Math.cos(heading) - y * Math.sin(heading);
-                rotY = x * Math.sin(heading) + y * Math.sin(heading);
+                double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
+                double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
 
                 leftFrontPower = (rotY + rotX + rx);
                 leftRearPower = (rotY - rotX + rx);
