@@ -12,12 +12,13 @@ import org.firstinspires.ftc.teamcode.commands.State;
 import org.firstinspires.ftc.teamcode.commands.LiftPID;
 import org.firstinspires.ftc.teamcode.commands.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.VoltageReader;
+import org.firstinspires.ftc.teamcode.commands.VoltageScaler;
 
 public class Lift implements Subsystem {
 
     private final DcMotorEx leftSlide, rightSlide;
 
-    private final VoltageReader voltageReader;
+    private final VoltageScaler voltageScaler;
 
     private final PIDFController liftPID;
 
@@ -25,7 +26,7 @@ public class Lift implements Subsystem {
     int target;
 
     public Lift(HardwareMap hardwareMap) {
-        voltageReader = new VoltageReader(hardwareMap);
+        voltageScaler = new VoltageScaler(hardwareMap);
 
         leftSlide = hardwareMap.get(DcMotorEx.class, RobotConstants.Lift.leftSlide);
         rightSlide = hardwareMap.get(DcMotorEx.class, RobotConstants.Lift.rightSlide);
@@ -40,9 +41,6 @@ public class Lift implements Subsystem {
         rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
         liftPID = new PIDFController(RobotConstants.Lift.P, RobotConstants.Lift.I, RobotConstants.Lift.D, RobotConstants.Lift.F);
-
-//        leftPID = RobotConstants.Lift.leftPID;
-//        rightPID = RobotConstants.Lift.rightPID;
 
         leftSlide.setPower(0);
         rightSlide.setPower(0);
@@ -75,34 +73,17 @@ public class Lift implements Subsystem {
 
     public void setTarget(int position) {
         target = position;
-
-        leftPID.clearError();
-        rightPID.clearError();
-        leftPID.setTarget(target);
-        rightPID.setTarget(target);
     }
 
-    public void powerSlides(double voltage, State state, double override){
-        
-//        int rightCurrent = rightSlide.getCurrentPosition();
-//        double power = rightPID.getCorrectionPosition(rightCurrent, voltage, state);
-//
-//        switch(state){
-//            case IDLE:
-//                if(Math.min(rightCurrent, leftSlide.getCurrentPosition()) < 5){
-//                    power = 0;
-//                    rightPID.setI(0);
-//                    rightPID.clearError();
-//                }
-//                break;
-//        }
-//
-//        if(override != 0){
-//            setTarget(rightCurrent);
-//            power = -override;
-//        }
-//        rightSlide.setPower(power);
-//        leftSlide.setPower(power);
+    public void powerSlides(){
+        double voltageCorrection = voltageScaler.getVoltageCorrection();
+
+        double correction;
+
+        correction = liftPID.calculate(rightSlide.getCurrentPosition(), target + voltageCorrection);
+
+        rightSlide.setPower(correction);
+        leftSlide.setPower(correction);
     }
 
     public void incrementSlides(double input) {

@@ -52,7 +52,7 @@ public class DinnerWithJayZ extends OpMode {
 
             // --------------------------- GLOBAL CONTROLS --------------------------- //
 
-        bot.lift.powerSlides(voltageReader.getVoltage(), bot.getState(), slideOverride);
+        bot.lift.powerSlides();
 
         if(driver.wasJustPressed(GamepadKeys.Button.Y)){
             bot.drivetrain.resetHeading();

@@ -5,6 +5,16 @@ import com.acmerobotics.dashboard.config.Config;
 public class RobotConstants {
 
     @Config
+    public static class VoltagePID {
+        public static double TARGET_VOLTAGE = 14;
+
+        public static double P = 0.0;
+        public static double I = 0.0;
+        public static double D = 0.0;
+        public static double F = 0.0;
+    }
+
+    @Config
     public static class Mecanum {
         public static String leftFront = "FL";
         public static String leftRear = "BL";
@@ -16,9 +26,6 @@ public class RobotConstants {
     public static class Lift {
         public static String leftSlide = "leftSlide";
         public static String rightSlide = "rightSlide";
-
-        public static LiftPID leftPID = new LiftPID(2, 0.1,4, 0, 515);
-        public static LiftPID rightPID = new LiftPID(2, 0.1, 4, 0, 515);
 
         public static double P = 0.0011;
         public static double I = 0.2;
