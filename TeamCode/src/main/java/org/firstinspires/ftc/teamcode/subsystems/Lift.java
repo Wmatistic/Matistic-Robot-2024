@@ -21,9 +21,10 @@ public class Lift implements Subsystem {
     private final VoltageScaler voltageScaler;
 
     private final PIDFController liftPID;
+    private final PIDFController loweringLiftPID;
 
 //    private final LiftPID leftPID, rightPID;
-    int target;
+    int target, prevTarget;
 
     public Lift(HardwareMap hardwareMap) {
         voltageScaler = new VoltageScaler(hardwareMap);
@@ -41,6 +42,7 @@ public class Lift implements Subsystem {
         rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
         liftPID = new PIDFController(RobotConstants.Lift.P, RobotConstants.Lift.I, RobotConstants.Lift.D, RobotConstants.Lift.F);
+        loweringLiftPID = new PIDFController(RobotConstants.Lift.loweringP, RobotConstants.Lift.loweringI, RobotConstants.Lift.loweringD, RobotConstants.Lift.loweringF);
 
         leftSlide.setPower(0);
         rightSlide.setPower(0);
@@ -72,6 +74,7 @@ public class Lift implements Subsystem {
     }
 
     public void setTarget(int position) {
+        prevTarget = target;
         target = position;
     }
 
@@ -80,7 +83,11 @@ public class Lift implements Subsystem {
 
         double correction;
 
-        correction = liftPID.calculate(rightSlide.getCurrentPosition(), target + voltageCorrection);
+        if (prevTarget > target){
+            correction = loweringLiftPID.calculate(rightSlide.getCurrentPosition(), target + voltageCorrection);
+        } else {
+            correction = liftPID.calculate(rightSlide.getCurrentPosition(), target + voltageCorrection);
+        }
 
         rightSlide.setPower(correction);
         leftSlide.setPower(correction);

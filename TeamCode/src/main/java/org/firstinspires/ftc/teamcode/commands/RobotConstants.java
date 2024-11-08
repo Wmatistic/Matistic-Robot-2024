@@ -27,13 +27,18 @@ public class RobotConstants {
         public static String leftSlide = "leftSlide";
         public static String rightSlide = "rightSlide";
 
-        public static double P = 0.0011;
+        public static double loweringP = 0.0001;
+        public static double loweringI = 0.2;
+        public static double loweringD = 0.0006;
+        public static double loweringF = 0.00001;
+
+        public static double P = 0.002;
         public static double I = 0.2;
-        public static double D = 0.0001;
+        public static double D = 0.0008;
         public static double F = 0.00001;
 
         // POSITIONS
-        public static int idle = 10;
+        public static int idle = 0;
         public static int highBucket = 1190;
         public static int lowBucket = 600;
         public static int highBar = 0;
@@ -46,17 +51,29 @@ public class RobotConstants {
         public static String leftArm = "leftArm";
         public static String rightArm = "rightArm";
         public static String wrist = "wrist";
+        public static String rotation = "rotation";
+        public static String claw = "claw";
 
-        public static double armIdle = 1.0;
+        public static double P = 1;
+        public static double I = 0.00001;
+        public static double D = 0.00001;
+        public static double F = 0.00001;
+
+        public static double clawOpen = 0.2;
+        public static double clawClose = 0.55;
+
+        public static double armIdle = 0.5;
         public static double wristIdle = 0.75;
+        public static double rotationIdle = 0.5;
 
         public static double armTransfer = 0;
         public static double wristTransfer = 0;
 
-        public static double armSubmersible = 0.05;
-        public static double wristSubmersible = 0.25;
-        public static double armSubmersibleGrab = 0;
-        public static double wristSubmerisbleGrab = 0.24;
+        public static double armSubmersible = 0.55;
+        public static double wristSubmersible = 0;
+        public static double submerisbleDelay = 0.15;
+        public static double armSubmersibleGrab = 0.65;
+        public static double wristSubmerisbleGrab = 0.1;
     }
 
     @Config

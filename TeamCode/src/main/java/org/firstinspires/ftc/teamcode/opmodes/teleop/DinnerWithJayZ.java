@@ -40,6 +40,8 @@ public class DinnerWithJayZ extends OpMode {
 
         telemetry.addData("\n Lift Position: ", bot.lift.getPosition());
         telemetry.addData("\n Extension Position", bot.horizontalExtension.getExtensionPosition());
+        telemetry.addData("\n Arm Position", bot.arm.getArmPosition());
+        telemetry.addData("\n Arm Correction", bot.arm.getCorrection());
         telemetry.update();
 
         driver.readButtons();
@@ -53,6 +55,7 @@ public class DinnerWithJayZ extends OpMode {
             // --------------------------- GLOBAL CONTROLS --------------------------- //
 
         bot.lift.powerSlides();
+        bot.arm.updateAssembly();
 
         if(driver.wasJustPressed(GamepadKeys.Button.Y)){
             bot.drivetrain.resetHeading();
@@ -105,13 +108,19 @@ public class DinnerWithJayZ extends OpMode {
                     }
                 }
 
+                if (driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)){
+                    bot.arm.incrementRotation(0.1);
+                } else if (driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)){
+                    bot.arm.incrementRotation(-0.1);
+                }
+
                 // Slowly Extend or Retract Extension
-                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)){
-                    bot.horizontalExtension.incrementExtension(0.01);
-                }
-                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)){
-                    bot.horizontalExtension.incrementExtension(-0.01);
-                }
+//                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)){
+//                    bot.horizontalExtension.incrementExtension(0.01);
+//                }
+//                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)){
+//                    bot.horizontalExtension.incrementExtension(-0.01);
+//                }
 
                 // Slowly Raise or Lower Slides
                 if(driver.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
