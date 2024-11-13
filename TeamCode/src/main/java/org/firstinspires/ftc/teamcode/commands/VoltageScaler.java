@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.commands;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.R;
-
 public class VoltageScaler {
     private HardwareMap hardwareMap;
 

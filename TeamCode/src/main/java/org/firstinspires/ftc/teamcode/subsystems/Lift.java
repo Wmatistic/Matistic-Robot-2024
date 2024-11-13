@@ -23,6 +23,8 @@ public class Lift implements Subsystem {
     private final PIDFController liftPID;
     private final PIDFController loweringLiftPID;
 
+    private State robotState;
+
 //    private final LiftPID leftPID, rightPID;
     int target, prevTarget;
 
@@ -51,6 +53,7 @@ public class Lift implements Subsystem {
     }
 
     public void setPosition(State state){
+        this.robotState = state;
         switch(state){
             case IDLE:
                 setTarget(RobotConstants.Lift.idle);
@@ -89,8 +92,27 @@ public class Lift implements Subsystem {
             correction = liftPID.calculate(rightSlide.getCurrentPosition(), target + voltageCorrection);
         }
 
-        rightSlide.setPower(correction);
-        leftSlide.setPower(correction);
+        if ((robotState == State.IDLE || robotState == State.SUB_GRABBING || robotState == State.SUB_INTAKING) && Math.abs(loweringLiftPID.getPositionError()) < 30){
+            rightSlide.setPower(0);
+            leftSlide.setPower(0);
+        } else {
+            rightSlide.setPower(correction);
+            leftSlide.setPower(correction);
+        }
+    }
+
+    public void resetEncoder(){
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftSlide.setPower(0);
+        rightSlide.setPower(0);
+
+        rightSlide.setDirection(DcMotorEx.Direction.REVERSE);
     }
 
     public void incrementSlides(double input) {
@@ -116,5 +138,13 @@ public class Lift implements Subsystem {
 
     public int getPosition(){
         return rightSlide.getCurrentPosition();
+    }
+
+    public double getPositionError(){
+        return loweringLiftPID.getPositionError();
+    }
+
+    public double getLiftPower(){
+        return rightSlide.getPower();
     }
 }

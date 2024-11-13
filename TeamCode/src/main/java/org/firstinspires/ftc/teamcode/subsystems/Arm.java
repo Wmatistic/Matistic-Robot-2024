@@ -58,6 +58,16 @@ public class Arm implements Subsystem {
             case TRANSFER:
                 setAssembly(RobotConstants.Arm.armTransfer, RobotConstants.Arm.wristTransfer, 0, false, 0);
                 break;
+            case LOW_BAR:
+                setAssembly(RobotConstants.Arm.armLowBar, RobotConstants.Arm.wristLowBar, RobotConstants.Arm.rotationIdle, false, 0);
+                break;
+            case LOW_BAR_SLAM:
+                setAssembly(RobotConstants.Arm.armLowBarSlam, RobotConstants.Arm.wristLowBarSlam, RobotConstants.Arm.rotationIdle, true, RobotConstants.Arm.lowBarDelay);
+                elapsedTime.reset();
+                break;
+            case LOW_BUCKET:
+            case HIGH_BUCKET:
+                setAssembly(RobotConstants.Arm.armScoring, RobotConstants.Arm.wristScoring, RobotConstants.Arm.rotationIdle, false, 0);
         }
     }
 
@@ -98,10 +108,12 @@ public class Arm implements Subsystem {
     }
 
     public void closeClaw(){
+        clawOpen = false;
         claw.setPosition(RobotConstants.Arm.clawClose);
     }
 
     public void openClaw(){
+        clawOpen = true;
         claw.setPosition(RobotConstants.Arm.clawOpen);
     }
 

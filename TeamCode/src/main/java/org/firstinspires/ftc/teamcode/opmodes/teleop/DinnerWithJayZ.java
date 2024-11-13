@@ -39,9 +39,11 @@ public class DinnerWithJayZ extends OpMode {
         telemetry.addData("Current State: ", bot.getState());
 
         telemetry.addData("\n Lift Position: ", bot.lift.getPosition());
-        telemetry.addData("\n Extension Position", bot.horizontalExtension.getExtensionPosition());
-        telemetry.addData("\n Arm Position", bot.arm.getArmPosition());
-        telemetry.addData("\n Arm Correction", bot.arm.getCorrection());
+        telemetry.addData("\n Lift Power: ", bot.lift.getLiftPower());
+        telemetry.addData("\n Extension Position: ", bot.horizontalExtension.getExtensionPosition());
+        telemetry.addData("\n Arm Position: ", bot.arm.getArmPosition());
+        telemetry.addData("\n Arm Correction: ", bot.arm.getCorrection());
+        telemetry.addData("\n Slide PID Position Error: ", bot.lift.getPositionError());
         telemetry.update();
 
         driver.readButtons();
@@ -62,7 +64,7 @@ public class DinnerWithJayZ extends OpMode {
         }
 
         if(driver.wasJustPressed(GamepadKeys.Button.X)){
-            bot.drivetrain.changeMode();
+            bot.arm.actuateClaw();
         }
 
 
@@ -84,11 +86,15 @@ public class DinnerWithJayZ extends OpMode {
                 if(driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)){
                     bot.setPosition(State.LOW_BUCKET);
                 }
-                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)){
+                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)){
                     bot.setPosition(State.HIGH_BAR);
                 }
-                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)){
+                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)){
                     bot.setPosition(State.LOW_BAR);
+                }
+
+                if(driver.wasJustPressed(GamepadKeys.Button.A)){
+                    bot.lift.resetEncoder();
                 }
 
                 break;
@@ -155,13 +161,26 @@ public class DinnerWithJayZ extends OpMode {
                     bot.setPosition(State.IDLE);
                 }
 
+                if(driver.wasJustPressed(GamepadKeys.Button.X)){
+                    bot.arm.openClaw();
+                }
+
                 break;
 
-            case GROUND_INTAKING:
+            case LOW_BAR:
+            case LOW_BAR_SLAM:
 
                 // Return To Default
-                if (!driver.getButton(GamepadKeys.Button.RIGHT_BUMPER)){
+                if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
                     bot.setPosition(State.IDLE);
+                }
+
+                if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
+                    if(bot.getState() == State.LOW_BAR) {
+                        bot.setPosition(State.LOW_BAR_SLAM);
+                    } else if (bot.getState() == State.LOW_BAR_SLAM){
+                        bot.setPosition(State.LOW_BAR);
+                    }
                 }
 
                 break;
