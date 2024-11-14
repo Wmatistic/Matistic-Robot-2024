@@ -44,6 +44,10 @@ public class DinnerWithJayZ extends OpMode {
         telemetry.addData("\n Arm Position: ", bot.arm.getArmPosition());
         telemetry.addData("\n Arm Correction: ", bot.arm.getCorrection());
         telemetry.addData("\n Slide PID Position Error: ", bot.lift.getPositionError());
+        telemetry.addData("\n FL Motor Power: ", bot.drivetrain.getMotorPowers()[0]);
+        telemetry.addData("\n BL Motor Power: ", bot.drivetrain.getMotorPowers()[1]);
+        telemetry.addData("\n FR Motor Power: ", bot.drivetrain.getMotorPowers()[2]);
+        telemetry.addData("\n BR Motor Power: ", bot.drivetrain.getMotorPowers()[3]);
         telemetry.update();
 
         driver.readButtons();
@@ -61,6 +65,10 @@ public class DinnerWithJayZ extends OpMode {
 
         if(driver.wasJustPressed(GamepadKeys.Button.Y)){
             bot.drivetrain.resetHeading();
+        }
+
+        if(driver.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)){
+            bot.drivetrain.changeDriveMode();
         }
 
         if(driver.wasJustPressed(GamepadKeys.Button.X)){

@@ -11,16 +11,41 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.commands.RobotConstants;
+import org.firstinspires.ftc.teamcode.commands.VoltageReader;
+import org.firstinspires.ftc.teamcode.commands.VoltageScaler;
 
 public class Mecanum implements Subsystem {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     double y, x, rx, leftFrontPower, leftRearPower, rightFrontPower, rightRearPower, heading, rotX, rotY;
     private IMU imu;
     private Mode mode;
+    private Drive_Mode driveMode;
+
+    private final VoltageScaler voltageScaler;
+
+    private double leftFrontLastPower = 0;
+    private double leftRearLastPower = 0;
+    private double rightFrontLastPower = 0;
+    private double rightRearLastPower = 0;
+    private double power = 0;
+    private double k = 0.1;
+    private long lastZeroTime = 0;
+    private static final int SWITCH_FROM_STATIC_TO_KINETIC_FRICTION = 75;
+
+    // leftFront, leftRear, rightFront, rightRear
+    private final double[] minPowersToOvercomeFriction = new double[] {
+            0.115,
+            0.115,
+            0.115,
+            0.115
+    };
 
     enum Mode{FIELD, ROBOT}
 
+    enum Drive_Mode{ANTI_FRICTION, FRICTION}
+
     public Mecanum(HardwareMap hardwareMap) {
+        voltageScaler = new VoltageScaler(hardwareMap);
 
         leftFront = hardwareMap.get(DcMotorEx.class, RobotConstants.Mecanum.leftFront);
         leftRear = hardwareMap.get(DcMotorEx.class, RobotConstants.Mecanum.leftRear);
@@ -37,6 +62,7 @@ public class Mecanum implements Subsystem {
         imu.resetYaw();
 
         mode = mode.FIELD;
+        driveMode = Drive_Mode.FRICTION;
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -45,7 +71,7 @@ public class Mecanum implements Subsystem {
     public void drive(GamepadEx gamepad) {
         double y = -gamepad.getLeftY();
         double x = -gamepad.getLeftX() * 1.1;
-        rx = gamepad.getRightX();
+        rx = gamepad.getRightX() * 1.1;
 
         switch (mode) {
             case FIELD:
@@ -69,10 +95,47 @@ public class Mecanum implements Subsystem {
                 break;
         }
 
-        leftFront.setPower(leftFrontPower);
-        leftRear.setPower(leftRearPower);
-        rightFront.setPower(rightFrontPower);
-        rightRear.setPower(rightRearPower);
+        switch(driveMode) {
+            case ANTI_FRICTION:
+                if (leftFrontPower == 0) {
+                    leftFront.setPower(leftFrontPower);
+                } else if (leftFrontPower > 0) {
+                    leftFront.setPower(leftFrontPower + minPowersToOvercomeFriction[0]);
+                } else if (leftFrontPower < 0) {
+                    leftFront.setPower(leftFrontPower - minPowersToOvercomeFriction[0]);
+                }
+
+                if (leftRearPower == 0) {
+                    leftRear.setPower(leftRearPower);
+                } else if (leftFrontPower > 0) {
+                    leftRear.setPower(leftRearPower + minPowersToOvercomeFriction[1]);
+                } else if (leftFrontPower < 0) {
+                    leftRear.setPower(leftRearPower - minPowersToOvercomeFriction[1]);
+                }
+
+                if (rightFrontPower == 0) {
+                    rightFront.setPower(rightFrontPower);
+                } else if (rightFrontPower > 0) {
+                    rightFront.setPower(rightFrontPower + minPowersToOvercomeFriction[2]);
+                } else if (rightFrontPower < 0) {
+                    rightFront.setPower(rightFrontPower - minPowersToOvercomeFriction[2]);
+                }
+
+                if (rightRearPower == 0) {
+                    rightRear.setPower(rightRearPower);
+                } else if (rightRearPower > 0) {
+                    rightRear.setPower(rightRearPower + minPowersToOvercomeFriction[3]);
+                } else if (rightRearPower < 0) {
+                    rightRear.setPower(rightRearPower - minPowersToOvercomeFriction[3]);
+                }
+                break;
+            case FRICTION:
+                leftFront.setPower(leftFrontPower);
+                leftRear.setPower(leftRearPower);
+                rightFront.setPower(rightFrontPower);
+                rightRear.setPower(rightRearPower);
+                break;
+        }
     }
 
     public double getHeading(){
@@ -93,5 +156,22 @@ public class Mecanum implements Subsystem {
 
     private void setMode(Mode m){
         mode = m;
+    }
+
+    public void changeDriveMode(){
+        if(driveMode == Drive_Mode.ANTI_FRICTION){
+            driveMode = Drive_Mode.FRICTION;
+        } else {
+            driveMode = Drive_Mode.ANTI_FRICTION;
+        }
+    }
+
+    public double[] getMotorPowers(){
+        return new double[] {
+                leftFrontPower,
+                leftRearPower,
+                rightFrontPower,
+                rightRearPower
+        };
     }
 }

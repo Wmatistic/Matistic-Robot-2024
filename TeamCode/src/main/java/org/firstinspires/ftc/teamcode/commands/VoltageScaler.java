@@ -8,6 +8,8 @@ public class VoltageScaler {
 
     private PIDFController voltagePIDF;
 
+    private double voltage;
+
     public VoltageScaler(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
 
@@ -15,7 +17,11 @@ public class VoltageScaler {
     }
 
     public double getVoltageCorrection(){
-        double voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
+        voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
         return voltagePIDF.calculate(voltage, RobotConstants.VoltagePID.TARGET_VOLTAGE);
+    }
+
+    public double getVoltage(){
+        return voltage;
     }
 }
