@@ -20,6 +20,7 @@ public class Robot {
         horizontalExtension = new HorizontalExtension(hardwareMap);
 
         state = State.IDLE;
+        setPosition(state);
     }
 
     public void setPosition(State state){

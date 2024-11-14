@@ -9,14 +9,14 @@ import org.firstinspires.ftc.teamcode.commands.State;
 
 public class HorizontalExtension implements Subsystem {
 
-    private final Servo rail, leftSlide, rightSlide;
+    private Servo rail, leftExtension, rightExtension;
 
     private double target = 0.0;
 
     public HorizontalExtension(HardwareMap hardwareMap) {
         rail = hardwareMap.servo.get(RobotConstants.HorizontalExtension.rail);
-        leftSlide = hardwareMap.servo.get(RobotConstants.HorizontalExtension.leftSlide);
-        rightSlide = hardwareMap.servo.get(RobotConstants.HorizontalExtension.rightSlide);
+        leftExtension = hardwareMap.servo.get(RobotConstants.HorizontalExtension.leftExtension);
+        rightExtension = hardwareMap.servo.get(RobotConstants.HorizontalExtension.rightExtension);
     }
 
     public void setPosition(State state){
@@ -40,17 +40,23 @@ public class HorizontalExtension implements Subsystem {
         this.target = target;
 
         if (target * RobotConstants.HorizontalExtension.railMax <= RobotConstants.HorizontalExtension.railMax) {
-            rail.setPosition(target);
+            rail.setPosition(target * RobotConstants.HorizontalExtension.railMax);
+            leftExtension.setPosition(0);
+            rightExtension.setPosition(0);
         } else {
             rail.setPosition(RobotConstants.HorizontalExtension.railMax);
-            leftSlide.setPosition((target - 1) * RobotConstants.HorizontalExtension.slideMax);
-            rightSlide.setPosition((target - 1) * RobotConstants.HorizontalExtension.slideMax);
+            leftExtension.setPosition((target - 1) * RobotConstants.HorizontalExtension.slideMax);
+            rightExtension.setPosition((target - 1) * RobotConstants.HorizontalExtension.slideMax);
 
         }
     }
 
     public void incrementExtension(double input){
         setExtension(target + input);
+    }
+
+    public double getExtensionPosition(){
+        return target;
     }
 
 }

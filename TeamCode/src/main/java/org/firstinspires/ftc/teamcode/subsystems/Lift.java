@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -9,33 +11,49 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.commands.State;
 import org.firstinspires.ftc.teamcode.commands.LiftPID;
 import org.firstinspires.ftc.teamcode.commands.RobotConstants;
+import org.firstinspires.ftc.teamcode.commands.VoltageReader;
+import org.firstinspires.ftc.teamcode.commands.VoltageScaler;
 
 public class Lift implements Subsystem {
 
     private final DcMotorEx leftSlide, rightSlide;
 
-    private final LiftPID leftPID, rightPID;
-    int target;
+    private final VoltageScaler voltageScaler;
+
+    private final PIDFController liftPID;
+    private final PIDFController loweringLiftPID;
+
+    private State robotState;
+
+//    private final LiftPID leftPID, rightPID;
+    int target, prevTarget;
 
     public Lift(HardwareMap hardwareMap) {
+        voltageScaler = new VoltageScaler(hardwareMap);
+
         leftSlide = hardwareMap.get(DcMotorEx.class, RobotConstants.Lift.leftSlide);
         rightSlide = hardwareMap.get(DcMotorEx.class, RobotConstants.Lift.rightSlide);
 
-        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftPID = RobotConstants.Lift.leftPID;
-        rightPID = RobotConstants.Lift.rightPID;
+        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        liftPID = new PIDFController(RobotConstants.Lift.P, RobotConstants.Lift.I, RobotConstants.Lift.D, RobotConstants.Lift.F);
+        loweringLiftPID = new PIDFController(RobotConstants.Lift.loweringP, RobotConstants.Lift.loweringI, RobotConstants.Lift.loweringD, RobotConstants.Lift.loweringF);
 
         leftSlide.setPower(0);
         rightSlide.setPower(0);
 
-        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        setTarget(0);
     }
 
     public void setPosition(State state){
+        this.robotState = state;
         switch(state){
             case IDLE:
                 setTarget(RobotConstants.Lift.idle);
@@ -59,12 +77,42 @@ public class Lift implements Subsystem {
     }
 
     public void setTarget(int position) {
+        prevTarget = target;
         target = position;
+    }
 
-        leftPID.clearError();
-        rightPID.clearError();
-        leftPID.setTarget(target);
-        rightPID.setTarget(target);
+    public void powerSlides(){
+        double voltageCorrection = voltageScaler.getVoltageCorrection();
+
+        double correction;
+
+        if (prevTarget > target){
+            correction = loweringLiftPID.calculate(rightSlide.getCurrentPosition(), target + voltageCorrection);
+        } else {
+            correction = liftPID.calculate(rightSlide.getCurrentPosition(), target + voltageCorrection);
+        }
+
+        if ((robotState == State.IDLE || robotState == State.SUB_GRABBING || robotState == State.SUB_INTAKING) && Math.abs(loweringLiftPID.getPositionError()) < 30){
+            rightSlide.setPower(0);
+            leftSlide.setPower(0);
+        } else {
+            rightSlide.setPower(correction);
+            leftSlide.setPower(correction);
+        }
+    }
+
+    public void resetEncoder(){
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftSlide.setPower(0);
+        rightSlide.setPower(0);
+
+        rightSlide.setDirection(DcMotorEx.Direction.REVERSE);
     }
 
     public void incrementSlides(double input) {
@@ -79,6 +127,10 @@ public class Lift implements Subsystem {
         }
     }
 
+    public DcMotor.ZeroPowerBehavior getZeroPowerBehavior(){
+        return leftSlide.getZeroPowerBehavior();
+    }
+
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
         leftSlide.setZeroPowerBehavior(behavior);
         rightSlide.setZeroPowerBehavior(behavior);
@@ -86,5 +138,13 @@ public class Lift implements Subsystem {
 
     public int getPosition(){
         return rightSlide.getCurrentPosition();
+    }
+
+    public double getPositionError(){
+        return loweringLiftPID.getPositionError();
+    }
+
+    public double getLiftPower(){
+        return rightSlide.getPower();
     }
 }
