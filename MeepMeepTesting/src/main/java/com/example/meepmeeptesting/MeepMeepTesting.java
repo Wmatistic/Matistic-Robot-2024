@@ -34,83 +34,83 @@ public class MeepMeepTesting {
                 .build();
 
         // HUMAN SIDE
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-16, 61, Math.toRadians(180)))
-
-                        .splineTo(humanPlayer, Math.toRadians(270))
-                        .waitSeconds(1)
-
-                        .splineTo(firstBlue, Math.toRadians(-90))
-                        .waitSeconds(0.1)
-
-                        .setReversed(true)
-                        .splineTo(humanPlayer, Math.toRadians(90))
-                        .waitSeconds(1)
-
-                        .setReversed(false)
-                        .splineTo(secondBlue, Math.toRadians(270))
-                        .waitSeconds(0.1)
-
-                        .setReversed(true)
-                        .splineTo(humanPlayer, Math.toRadians(90))
-                        .waitSeconds(1)
-
-                        .setReversed(false)
-                        .splineTo(thirdBlue, Math.toRadians(180))
-                        .waitSeconds(0.1)
-
-                        .setReversed(true)
-                        .splineTo(humanPlayer, Math.toRadians(90))
-                        .waitSeconds(1)
-
-                .build());
-
-        // BUCKET SIDE
-//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(7.5, 61, Math.toRadians(180)))
-//                .setReversed(true)
-//                .splineTo(blueBucket, Math.toRadians(45))
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-16, 61, Math.toRadians(180)))
 //
-//                .waitSeconds(0.5)
+//                        .splineTo(humanPlayer, Math.toRadians(270))
+//                        .waitSeconds(1)
 //
-//                .setReversed(false)
-//                .splineTo(firstYellow, Math.toRadians(-90))
+//                        .splineTo(firstBlue, Math.toRadians(-90))
+//                        .waitSeconds(0.1)
 //
-//                .waitSeconds(0.1)
+//                        .setReversed(true)
+//                        .splineTo(humanPlayer, Math.toRadians(90))
+//                        .waitSeconds(1)
 //
-//                .setReversed(true)
-//                .splineTo(blueBucket, Math.toRadians(45))
+//                        .setReversed(false)
+//                        .splineTo(secondBlue, Math.toRadians(270))
+//                        .waitSeconds(0.1)
 //
-//                .waitSeconds(0.5)
+//                        .setReversed(true)
+//                        .splineTo(humanPlayer, Math.toRadians(90))
+//                        .waitSeconds(1)
 //
-//                .setReversed(false)
-//                .splineTo(secondYellow, Math.toRadians(-90))
+//                        .setReversed(false)
+//                        .splineTo(thirdBlue, Math.toRadians(180))
+//                        .waitSeconds(0.1)
 //
-//                .waitSeconds(0.1)
-//
-//                .setReversed(true)
-//                .splineTo(blueBucket, Math.toRadians(45))
-//
-//                .waitSeconds(0.5)
-//
-//                .setReversed(false)
-//                .splineTo(thirdYellow, Math.toRadians(0))
-//
-//                .waitSeconds(0.1)
-//
-//                .setReversed(true)
-//                .splineTo(blueBucket, Math.toRadians(45))
-//
-//                .waitSeconds(0.5)
-//
-//                // PARK IN ASCENT
-////                .setReversed(false)
-////                .splineTo(parkAscentIntermediate, Math.toRadians(270))
-////                .splineToLinearHeading(new Pose2d(parkAscent, Math.toRadians(0)), Math.toRadians(135))
-//
-//                .setReversed(false)
-//                .splineTo(parkObservation, Math.toRadians(180))
-//
+//                        .setReversed(true)
+//                        .splineTo(humanPlayer, Math.toRadians(90))
+//                        .waitSeconds(1)
 //
 //                .build());
+
+        // BUCKET SIDE
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(7.5, 61, Math.toRadians(180)))
+                .setReversed(true)
+                .splineTo(blueBucket, Math.toRadians(45))
+
+                .waitSeconds(0.5)
+
+                .setReversed(false)
+                .splineTo(firstYellow, Math.toRadians(-90))
+
+                .waitSeconds(0.1)
+
+                .setReversed(true)
+                .splineTo(blueBucket, Math.toRadians(45))
+
+                .waitSeconds(0.5)
+
+                .setReversed(false)
+                .splineTo(secondYellow, Math.toRadians(-90))
+
+                .waitSeconds(0.1)
+
+                .setReversed(true)
+                .splineTo(blueBucket, Math.toRadians(45))
+
+                .waitSeconds(0.5)
+
+                .setReversed(false)
+                .splineTo(thirdYellow, Math.toRadians(0))
+
+                .waitSeconds(0.1)
+
+                .setReversed(true)
+                .splineTo(blueBucket, Math.toRadians(45))
+
+                .waitSeconds(0.5)
+
+                // PARK IN ASCENT
+//                .setReversed(false)
+//                .splineTo(parkAscentIntermediate, Math.toRadians(270))
+//                .splineToLinearHeading(new Pose2d(parkAscent, Math.toRadians(0)), Math.toRadians(135))
+
+                .setReversed(false)
+                .splineTo(parkObservation, Math.toRadians(180))
+
+
+                .build());
 
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
