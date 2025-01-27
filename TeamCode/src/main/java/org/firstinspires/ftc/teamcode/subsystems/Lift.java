@@ -59,6 +59,7 @@ public class Lift implements Subsystem {
                 setTarget(RobotConstants.Lift.idle);
                 break;
             case HIGH_BUCKET:
+            case HIGH_BUCKET_SLAM:
                 setTarget(RobotConstants.Lift.highBucket);
                 break;
             case LOW_BUCKET:
@@ -69,6 +70,9 @@ public class Lift implements Subsystem {
                 break;
             case LOW_BAR:
                 setTarget(RobotConstants.Lift.lowBar);
+                break;
+            case HIGH_BAR_SLAM:
+                setTarget(RobotConstants.Lift.highBarSlam);
                 break;
             case SUB_INTAKING:
                 setTarget(RobotConstants.Lift.submersible);
@@ -92,7 +96,7 @@ public class Lift implements Subsystem {
             correction = liftPID.calculate(rightSlide.getCurrentPosition(), target + voltageCorrection);
         }
 
-        if ((robotState == State.IDLE || robotState == State.SUB_GRABBING || robotState == State.SUB_INTAKING) && Math.abs(loweringLiftPID.getPositionError()) < 30){
+        if ((robotState == State.IDLE || robotState == State.SUB_GRABBING || robotState == State.SUB_INTAKING) && Math.abs(getPosition() - target) < 30){
             rightSlide.setPower(0);
             leftSlide.setPower(0);
         } else {

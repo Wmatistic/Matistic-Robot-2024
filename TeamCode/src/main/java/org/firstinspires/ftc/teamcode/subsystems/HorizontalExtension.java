@@ -29,7 +29,11 @@ public class HorizontalExtension implements Subsystem {
                 break;
             case HIGH_BUCKET:
             case LOW_BUCKET:
+            case HIGH_BUCKET_SLAM:
+                setExtension(RobotConstants.HorizontalExtension.idle);
+                break;
             case HIGH_BAR:
+            case HIGH_BAR_SLAM:
             case LOW_BAR:
                 setExtension(RobotConstants.HorizontalExtension.scoring);
                 break;

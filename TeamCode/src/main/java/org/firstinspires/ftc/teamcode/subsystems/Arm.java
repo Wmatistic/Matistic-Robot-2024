@@ -15,13 +15,13 @@ public class Arm implements Subsystem {
 
     private ElapsedTime elapsedTime;
 
-    private CRServo leftArm, rightArm;
-    private Servo rotation, claw, wrist;
+    private CRServo leftArm, rightArm, clawDrive;
+    private Servo rotation, clawActuate, wrist;
 
     private AnalogInput leftArmInput, rightArmInput;
 
     private PIDFController armPID;
-    private double target, wristTarget, rotationTarget, delay;
+    private double target, wristTarget, rotationTarget, clawPower, delay;
     private boolean clawOpen;
     private double globalCorrection;
 
@@ -35,39 +35,47 @@ public class Arm implements Subsystem {
 
         rightArm = hardwareMap.crservo.get(RobotConstants.Arm.rightArm);
         leftArm = hardwareMap.crservo.get(RobotConstants.Arm.leftArm);
+        clawDrive = hardwareMap.crservo.get(RobotConstants.Arm.clawDrive);
 
         armPID = new PIDFController(RobotConstants.Arm.P, RobotConstants.Arm.I, RobotConstants.Arm.D, RobotConstants.Arm.F);
 
         wrist = hardwareMap.servo.get(RobotConstants.Arm.wrist);
         rotation = hardwareMap.servo.get(RobotConstants.Arm.rotation);
-        claw = hardwareMap.servo.get(RobotConstants.Arm.claw);
+        clawActuate = hardwareMap.servo.get(RobotConstants.Arm.clawActuate);
     }
 
     public void setPosition(State state){
         switch(state){
             case IDLE:
-                setAssembly(RobotConstants.Arm.armIdle, RobotConstants.Arm.wristIdle, RobotConstants.Arm.rotationIdle, false, 0);
+            case HIGH_BUCKET:
+            case LOW_BUCKET:
+                setAssembly(RobotConstants.Arm.armIdle, RobotConstants.Arm.wristIdle, RobotConstants.Arm.rotationIdle, false, 0, 0);
                 break;
             case SUB_INTAKING:
-                setAssembly(RobotConstants.Arm.armSubmersible, RobotConstants.Arm.wristSubmersible, RobotConstants.Arm.rotationIdle, true, 0);
+                setAssembly(RobotConstants.Arm.armSubmersible, RobotConstants.Arm.wristSubmersible, RobotConstants.Arm.rotationIdle, true, -1, 0);
                 break;
             case SUB_GRABBING:
-                setAssembly(RobotConstants.Arm.armSubmersibleGrab, RobotConstants.Arm.wristSubmerisbleGrab, rotationTarget, false, RobotConstants.Arm.submerisbleDelay);
+                setAssembly(RobotConstants.Arm.armSubmersibleGrab, RobotConstants.Arm.wristSubmerisbleGrab, rotationTarget, false, -1, RobotConstants.Arm.submerisbleDelay);
                 elapsedTime.reset();
                 break;
             case TRANSFER:
-                setAssembly(RobotConstants.Arm.armTransfer, RobotConstants.Arm.wristTransfer, 0, false, 0);
+                setAssembly(RobotConstants.Arm.armTransfer, RobotConstants.Arm.wristTransfer, 0, false, 0,0);
                 break;
             case LOW_BAR:
-                setAssembly(RobotConstants.Arm.armLowBar, RobotConstants.Arm.wristLowBar, RobotConstants.Arm.rotationIdle, false, 0);
+            case HIGH_BAR:
+                setAssembly(RobotConstants.Arm.armLowBar, RobotConstants.Arm.wristLowBar, RobotConstants.Arm.rotationIdle, false, 0,0);
                 break;
             case LOW_BAR_SLAM:
-                setAssembly(RobotConstants.Arm.armLowBarSlam, RobotConstants.Arm.wristLowBarSlam, RobotConstants.Arm.rotationIdle, true, RobotConstants.Arm.lowBarDelay);
+            case HIGH_BAR_SLAM:
+                setAssembly(RobotConstants.Arm.armLowBarSlam, RobotConstants.Arm.wristLowBarSlam, RobotConstants.Arm.rotationIdle, true, 0, RobotConstants.Arm.lowBarDelay);
                 elapsedTime.reset();
                 break;
-            case LOW_BUCKET:
-            case HIGH_BUCKET:
-                setAssembly(RobotConstants.Arm.armScoring, RobotConstants.Arm.wristScoring, RobotConstants.Arm.rotationIdle, false, 0);
+            case HIGH_BUCKET_SLAM:
+                setAssembly(RobotConstants.Arm.armHighBucketSlam, RobotConstants.Arm.wristIdle, RobotConstants.Arm.rotationIdle, false, 0.5, 0);
+//            case LOW_BUCKET:
+//            case HIGH_BUCKET:
+//                setAssembly(RobotConstants.Arm.armScoring, RobotConstants.Arm.wristScoring, RobotConstants.Arm.rotationIdle, false, 0);
+//                break;
         }
     }
 
@@ -78,20 +86,26 @@ public class Arm implements Subsystem {
         if (elapsedTime.time() > delay){
             setWrist(wristTarget);
             setRotation(rotationTarget);
-            setClaw(clawOpen);
+            setClawActuate(clawOpen);
+            setClawDrive(clawPower);
         }
 
     }
 
-    public void setAssembly(double target, double wristTarget, double rotationTarget, boolean clawOpen, double delay){
+    public void setAssembly(double target, double wristTarget, double rotationTarget, boolean clawOpen, double clawDrive, double delay){
         this.target = target;
         this.wristTarget = wristTarget;
         this.rotationTarget = rotationTarget;
         this.clawOpen = clawOpen;
+        this.clawPower = clawDrive;
         this.delay = delay;
     }
 
-    public void setClaw(boolean clawOpen){
+    public void setClawDrive(double clawPower){
+        clawDrive.setPower(clawPower);
+    }
+
+    public void setClawActuate(boolean clawOpen){
         if (clawOpen) {
             openClaw();
         } else {
@@ -100,7 +114,7 @@ public class Arm implements Subsystem {
     }
 
     public void actuateClaw(){
-        if (claw.getPosition() == RobotConstants.Arm.clawClose){
+        if (clawActuate.getPosition() == RobotConstants.Arm.clawClose){
             openClaw();
         } else {
             closeClaw();
@@ -109,12 +123,12 @@ public class Arm implements Subsystem {
 
     public void closeClaw(){
         clawOpen = false;
-        claw.setPosition(RobotConstants.Arm.clawClose);
+        clawActuate.setPosition(RobotConstants.Arm.clawClose);
     }
 
     public void openClaw(){
         clawOpen = true;
-        claw.setPosition(RobotConstants.Arm.clawOpen);
+        clawActuate.setPosition(RobotConstants.Arm.clawOpen);
     }
 
     public void incrementRotation(double increment){
@@ -123,6 +137,10 @@ public class Arm implements Subsystem {
 
     public void setRotation(double rotationTarget) {
         rotation.setPosition(rotationTarget);
+    }
+
+    public void setRotationTarget(double rotationTarget) {
+        this.rotationTarget = rotationTarget;
     }
 
     public void setWrist(double target){

@@ -146,6 +146,7 @@ public class DinnerWithJayZ extends OpMode {
 
                 break;
             case HIGH_BUCKET:
+            case HIGH_BUCKET_SLAM:
 
                 // Return To Default
                 if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
@@ -160,6 +161,14 @@ public class DinnerWithJayZ extends OpMode {
                     bot.lift.incrementSlides(-1);
                 }
 
+                if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
+                    if(bot.getState() == State.HIGH_BUCKET) {
+                        bot.setPosition(State.HIGH_BUCKET_SLAM);
+                    } else if (bot.getState() == State.HIGH_BUCKET_SLAM) {
+                        bot.setPosition(State.HIGH_BUCKET);
+                    }
+                }
+
                 break;
 
             case LOW_BUCKET:
@@ -167,10 +176,6 @@ public class DinnerWithJayZ extends OpMode {
                 // Return To Default
                 if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
                     bot.setPosition(State.IDLE);
-                }
-
-                if(driver.wasJustPressed(GamepadKeys.Button.X)){
-                    bot.arm.openClaw();
                 }
 
                 break;

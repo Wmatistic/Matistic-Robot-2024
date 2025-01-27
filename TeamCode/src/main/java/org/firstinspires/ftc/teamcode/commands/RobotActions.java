@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.ActionProvider;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -24,13 +23,17 @@ public class RobotActions {
         return new SlidePIDLoop();
     }
 
-    public Action ArmPID() {
-        return new ArmPIDLoop();
+    public Action ArmAssembly() {
+        return new ArmAssemblyLoop();
     }
 
     public Action setRobotState(State state) {
         return new setRobotState(state);
     }
+
+    public Action setClaw(boolean clawOpen) { return new setClaw(clawOpen); }
+
+    public Action setClawRotation(double clawRotation) { return new setClawRotation(clawRotation); }
 
     public class setRobotState implements Action {
         State state;
@@ -45,6 +48,30 @@ public class RobotActions {
         }
     }
 
+    public class setClawRotation implements Action {
+        double clawRotation;
+
+        public setClawRotation(double clawRotation) { this.clawRotation = clawRotation; }
+
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            bot.arm.setRotationTarget(clawRotation);
+            return false;
+        }
+    }
+
+    public class setClaw implements Action {
+        boolean clawOpen;
+        public setClaw(boolean clawOpen) { this.clawOpen = clawOpen; }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            bot.arm.setClawActuate(clawOpen);
+            return false;
+        }
+    }
+
     public class SlidePIDLoop implements Action {
 
         @Override
@@ -55,11 +82,11 @@ public class RobotActions {
         }
     }
 
-    public class ArmPIDLoop implements Action {
+    public class ArmAssemblyLoop implements Action {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            bot.arm.updateArms();
+            bot.arm.updateAssembly();
 
             return false;
         }
