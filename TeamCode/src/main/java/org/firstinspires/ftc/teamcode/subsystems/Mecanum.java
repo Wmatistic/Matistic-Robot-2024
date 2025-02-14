@@ -40,7 +40,7 @@ public class Mecanum implements Subsystem {
             0.115
     };
 
-    enum Mode{FIELD, ROBOT}
+    public enum Mode{FIELD, ROBOT, SUBINTAKING}
 
     enum Drive_Mode{ANTI_FRICTION, FRICTION}
 
@@ -74,6 +74,12 @@ public class Mecanum implements Subsystem {
         rx = gamepad.getRightX() * 1.1;
 
         switch (mode) {
+            case SUBINTAKING:
+
+                y *= 0.5;
+                x *= 0.5;
+                rx *= 0.5;
+
             case FIELD:
                 heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
                 double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
@@ -154,7 +160,7 @@ public class Mecanum implements Subsystem {
         }
     }
 
-    private void setMode(Mode m){
+    public void setMode(Mode m){
         mode = m;
     }
 

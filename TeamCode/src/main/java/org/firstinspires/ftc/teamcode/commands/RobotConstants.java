@@ -27,19 +27,19 @@ public class RobotConstants {
         public static String leftSlide = "leftSlide";
         public static String rightSlide = "rightSlide";
 
-        public static double P = 0.032;
+        public static double P = 0.007;
         public static double I = 0.00001;
-        public static double D = 0.0;
+        public static double D = 0.0002;
         public static double F = 0.00001;
 
-        public static double loweringP = 0.0002;
-        public static double loweringI = 0.2;
+        public static double loweringP = 0.0027;
+        public static double loweringI = 0.00001;
         public static double loweringD = 0.0002;
         public static double loweringF = 0.00001;
 
         // POSITIONS
         public static int idle = 0;
-        public static int highBucket = 1190;
+        public static int highBucket = 1000;
         public static int lowBucket = 700;
         public static int highBar = 600;
         public static int lowBar = 0;
@@ -61,21 +61,24 @@ public class RobotConstants {
         public static double D = 0.00001;
         public static double F = 0.0001;
 
-        public static double clawOpen = 0.55;
+        public static double clawOpen = 0.5;
         public static double clawClose = 0.425;
 
-        public static double armIdle = 0.5;
-        public static double wristIdle = 0.75;
+        public static double clawIntakingSpeed = -1;
+        public static double clawOutakingSpeed = 0.5;
+
+        public static double armIdle = 0.35;
+        public static double wristIdle = 0.9;
         public static double rotationIdle = 0.5;
 
         public static double armTransfer = 0;
         public static double wristTransfer = 0;
 
-        public static double armSubmersible = 0.7;
+        public static double armSubmersible = 0.62; // 8 sweep
         public static double wristSubmersible = 0;
         public static double submerisbleDelay = 0.15;
-        public static double armSubmersibleGrab = 0.77;
-        public static double wristSubmerisbleGrab = 0.05;
+        public static double armSubmersibleGrab = 0.75;
+        public static double wristSubmerisbleGrab = 0.3;
 
         public static double armScoring = 0.6;
         public static double wristScoring = 0.2;
@@ -101,7 +104,7 @@ public class RobotConstants {
 
         // Input works on a scale of 2 with 1.0 being full extension of the rail and 2.0 being full extension of both slide and rail
         public static double idle = 0.0;
-        public static double subIntaking = 2;
+        public static double subIntaking = 1.2;
         public static double scoring = 1.5;
     }
 

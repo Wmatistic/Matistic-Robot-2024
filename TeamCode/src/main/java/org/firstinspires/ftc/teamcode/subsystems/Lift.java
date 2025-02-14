@@ -96,7 +96,7 @@ public class Lift implements Subsystem {
             correction = liftPID.calculate(rightSlide.getCurrentPosition(), target + voltageCorrection);
         }
 
-        if ((robotState == State.IDLE || robotState == State.SUB_GRABBING || robotState == State.SUB_INTAKING) && Math.abs(getPosition() - target) < 30){
+        if ((robotState == State.IDLE || robotState == State.SUB_GRABBING || robotState == State.SUB_INTAKING) && Math.abs(getPosition() - target) < 20){
             rightSlide.setPower(0);
             leftSlide.setPower(0);
         } else {

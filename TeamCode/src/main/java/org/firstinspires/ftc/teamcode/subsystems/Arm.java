@@ -25,6 +25,8 @@ public class Arm implements Subsystem {
     private boolean clawOpen;
     private double globalCorrection;
 
+    private State currentState;
+
     public Arm (HardwareMap hardwareMap){
         voltageScaler = new VoltageScaler(hardwareMap);
 
@@ -45,6 +47,8 @@ public class Arm implements Subsystem {
     }
 
     public void setPosition(State state){
+        currentState = state;
+
         switch(state){
             case IDLE:
             case HIGH_BUCKET:
@@ -52,10 +56,10 @@ public class Arm implements Subsystem {
                 setAssembly(RobotConstants.Arm.armIdle, RobotConstants.Arm.wristIdle, RobotConstants.Arm.rotationIdle, false, 0, 0);
                 break;
             case SUB_INTAKING:
-                setAssembly(RobotConstants.Arm.armSubmersible, RobotConstants.Arm.wristSubmersible, RobotConstants.Arm.rotationIdle, true, -1, 0);
+                setAssembly(RobotConstants.Arm.armSubmersible, RobotConstants.Arm.wristSubmersible, RobotConstants.Arm.rotationIdle, true, RobotConstants.Arm.clawIntakingSpeed, 0);
                 break;
             case SUB_GRABBING:
-                setAssembly(RobotConstants.Arm.armSubmersibleGrab, RobotConstants.Arm.wristSubmerisbleGrab, rotationTarget, false, -1, RobotConstants.Arm.submerisbleDelay);
+                setAssembly(RobotConstants.Arm.armSubmersibleGrab, RobotConstants.Arm.wristSubmerisbleGrab, rotationTarget, false, RobotConstants.Arm.clawIntakingSpeed, RobotConstants.Arm.submerisbleDelay);
                 elapsedTime.reset();
                 break;
             case TRANSFER:
@@ -71,11 +75,7 @@ public class Arm implements Subsystem {
                 elapsedTime.reset();
                 break;
             case HIGH_BUCKET_SLAM:
-                setAssembly(RobotConstants.Arm.armHighBucketSlam, RobotConstants.Arm.wristIdle, RobotConstants.Arm.rotationIdle, false, 0.5, 0);
-//            case LOW_BUCKET:
-//            case HIGH_BUCKET:
-//                setAssembly(RobotConstants.Arm.armScoring, RobotConstants.Arm.wristScoring, RobotConstants.Arm.rotationIdle, false, 0);
-//                break;
+                setAssembly(RobotConstants.Arm.armHighBucketSlam, RobotConstants.Arm.wristIdle, RobotConstants.Arm.rotationIdle, true, 0, 0);
         }
     }
 
@@ -170,5 +170,9 @@ public class Arm implements Subsystem {
 
     public double getCorrection() {
         return globalCorrection;
+    }
+
+    public State getState() {
+        return currentState;
     }
 }

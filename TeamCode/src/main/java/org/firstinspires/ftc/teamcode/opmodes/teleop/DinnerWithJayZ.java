@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.commands.RobotConstants;
 import org.firstinspires.ftc.teamcode.commands.State;
+import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.firstinspires.ftc.teamcode.commands.VoltageReader;
 
@@ -109,16 +110,19 @@ public class DinnerWithJayZ extends OpMode {
             case SUB_INTAKING:
             case SUB_GRABBING:
 
+                bot.drivetrain.setMode(Mecanum.Mode.SUBINTAKING);
+
                 // Return To Default
                 if(driver.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
+                    bot.drivetrain.setMode(Mecanum.Mode.FIELD);
                     bot.setPosition(State.IDLE);
                 }
 
                 if(driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
-                    if(bot.getState() == State.SUB_INTAKING) {
+                    if(bot.arm.getState() == State.SUB_INTAKING) {
                         bot.setPosition(State.SUB_GRABBING);
-                    } else if (bot.getState() == State.SUB_GRABBING){
-                        bot.setPosition(State.SUB_INTAKING);
+                    } else if (bot.arm.getState() == State.SUB_GRABBING){
+                        bot.arm.setPosition(State.SUB_INTAKING);
                     }
                 }
 
@@ -129,20 +133,8 @@ public class DinnerWithJayZ extends OpMode {
                 }
 
                 // Slowly Extend or Retract Extension
-//                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)){
-//                    bot.horizontalExtension.incrementExtension(0.01);
-//                }
-//                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)){
-//                    bot.horizontalExtension.incrementExtension(-0.01);
-//                }
+                bot.horizontalExtension.incrementExtension(driver.getRightY() * -0.05);
 
-                // Slowly Raise or Lower Slides
-                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
-                    bot.lift.incrementSlides(1);
-                }
-                if(driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)){
-                    bot.lift.incrementSlides(-1);
-                }
 
                 break;
             case HIGH_BUCKET:
